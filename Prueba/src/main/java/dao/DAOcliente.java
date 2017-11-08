@@ -96,29 +96,31 @@ public class DAOcliente
 	/**
 	 * Método que busca el/los clientes con el nombre que entra como parámetro.
 	 * @param name - Nombre de el/los clientes a buscar
-	 * @return Arraylist con los clientes encontrados
+	 * @return El cliente encontrado, null si no se encuentra ninguno o null si la contrasena no es la correcta
 	 * @throws SQLException - Cualquier error que la base de datos arroje.
 	 * @throws Exception - Cualquier error que no corresponda a la base de datos
 	 */
-	public ArrayList<Cliente> buscarClienterPorId(int id) throws SQLException, Exception 
+	public Cliente buscarClienterPorUsuario(String usuario, String conta) throws SQLException, Exception 
 	{
-		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 
-		String sql = "SELECT * FROM CLIENTES WHERE ID ='" + id + "'";
+		String sql = "SELECT * FROM CLIENTES WHERE USUARIO ='" + usuario + "'";
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
+		Cliente res = null;
 		while (rs.next()) {
+			int id = Integer.parseInt(rs.getString("ID"));
 			String name = rs.getString("NOMBRE");
 			int edad = Integer.parseInt(rs.getString("EDAD"));
 			String correo = rs.getString("CORREO");
 			String documento = rs.getString("DOCUMENTO");
-			String usuario = rs.getString("USUARIO");
 			String cont = rs.getString("CONTRASENA");
-			clientes.add(new Cliente(id, name, edad,documento, correo, usuario, cont));
+			res = new Cliente(id, name, edad,documento, correo, usuario, cont);
 		}
-		return clientes;
+		if(res != null && res.getContrasena().equals(conta)) {
+			return res;
+		}
+		return null;
 	}
 
 	/**
